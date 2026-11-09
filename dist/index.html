@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#ffffff">
+  <meta name="description" content="An illustrated reference for art and graphic design. Explore the styles, techniques, and movements through one red pear.">
+  <title>The Pear Index — An atlas of art &amp; graphic design</title>
+  <link rel="icon" href="pear.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="style.css">
+  <script defer src="catalog.js"></script>
+  <script defer src="atlas.js"></script>
+</head>
+<body id="top">
+  <a class="skip-link" href="#collection">Skip to the collection</a>
+  <header class="masthead wide">
+    <a class="brand" href="#top"><img src="pear.svg" width="26" height="28" alt=""> The Pear Index</a>
+    <nav aria-label="Site"><a href="#collection">Explore</a><a href="#about">About the atlas</a></nav>
+    <a class="pill masthead-action" href="#collection">Browse styles</a>
+  </header>
+  <div class="announcement wide">
+    <img src="pear.svg" width="18" height="19" alt="">
+    <span>One red pear. <strong>147 studies in art and design.</strong></span>
+  </div>
+  <main class="shell">
+    <section class="hero" aria-labelledby="site-title">
+      <div class="hero-copy">
+        <p class="eyebrow">Art &amp; design inspiration</p>
+        <h1 id="site-title">Find your next<br> <em>design direction.</em></h1>
+        <p class="hero-description">See how artists and designers reinterpret the same subject across movements, styles, and techniques.</p>
+        <ul class="hero-points">
+          <li><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 12 4 4 8-8"/></svg> Compare studies side by side</li>
+          <li><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 12 4 4 8-8"/></svg> Open any piece for a closer look</li>
+        </ul>
+        <a class="pill primary" href="#collection">Explore the collection <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14m-6-6 6 6-6 6"/></svg></a>
+      </div>
+      <div class="hero-exhibit">
+        <div class="hero-art" id="hero-art"></div>
+        <div class="hero-switcher" id="hero-switcher" role="group" aria-label="Choose featured artwork"></div>
+      </div>
+    </section>
+
+    <section class="collection" id="collection" aria-labelledby="collection-title">
+      <div class="collection-header">
+        <h2 id="collection-title"><label for="search">Explore styles</label></h2>
+        <p id="results" class="results" aria-live="polite"></p>
+      </div>
+      <form id="style-search" class="search-field" role="search">
+        <input id="search" type="search" placeholder="Search art and design styles" autocomplete="off">
+        <button class="search-button" type="submit" aria-label="Show search results"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.7" cy="10.7" r="6.2"/><path d="m15.4 15.4 4.1 4.1"/></svg></button>
+      </form>
+      <div class="controls">
+        <div class="suggestions" id="suggestions" role="group" aria-label="Suggested searches">
+          <strong>Try</strong>
+          <button type="button" aria-pressed="false">Art Nouveau</button>
+          <button type="button" aria-pressed="false">Flat vector</button>
+          <button type="button" aria-pressed="false">Typography</button>
+          <button type="button" aria-pressed="false">Risograph</button>
+          <button type="button" aria-pressed="false">3D</button>
+        </div>
+        <label class="chapter-filter">
+          <span class="visually-hidden">Filter by chapter</span>
+          <select id="filters"><option value="all">All chapters</option></select>
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
+        </label>
+      </div>
+      <div id="gallery"></div>
+      <noscript><p>Enable JavaScript to browse the illustrated collection.</p></noscript>
+    </section>
+
+    <footer id="about" class="about">
+      <div>
+        <p class="eyebrow">About the atlas</p>
+        <h2>One motif, many methods.</h2>
+        <p>The illustrations are generated studies. Repeating the pear helps isolate what changes from one approach to another, from the way a page is laid out to how an ink mark lands on paper.</p>
+      </div>
+      <div>
+        <h3>How to read the index</h3>
+        <p>A movement places work in a historical context. A style describes how it looks. A medium or technique describes how it is made. One design can combine all three.</p>
+        <a href="#top">Back to top ↑</a>
+      </div>
+    </footer>
+  </main>
+
+  <dialog class="detail" id="detail" aria-labelledby="detail-title" aria-describedby="detail-description">
+    <div class="detail-inner">
+      <header class="detail-top">
+        <div>
+          <h2 id="detail-title" aria-live="polite"></h2>
+          <div class="detail-meta">
+            <img src="pear.svg" width="34" height="34" alt="">
+            <div><p id="detail-chapter"></p><p id="detail-index"></p></div>
+          </div>
+        </div>
+        <form method="dialog"><button class="icon-button" type="submit" aria-label="Close detail" autofocus><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 6 12 12M6 18 18 6"/></svg></button></form>
+      </header>
+      <div id="detail-art" class="detail-art"></div>
+      <p id="detail-description"></p>
+      <footer class="detail-navigation" aria-label="Explore other specimens">
+        <button id="previous" type="button"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19 12H5m6-6-6 6 6 6"/></svg> Previous</button>
+        <span id="detail-position"></span>
+        <button id="next" type="button">Next <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14m-6-6 6 6-6 6"/></svg></button>
+      </footer>
+    </div>
+  </dialog>
+</body>
+</html>
