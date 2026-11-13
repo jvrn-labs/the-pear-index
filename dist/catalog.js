@@ -671,6 +671,16 @@ const catalog = [
           372,
           329
         ]
+      },
+      {
+        "name": "Whimsical cartoon illustration",
+        "description": "Oversized eyes, offbeat proportions, and a tiny, deadpan mouth make the character expressive and funny. Loose ink contours, a little dry-brush texture, and a flat color background keep the focus on the face and silhouette.",
+        "artwork": "whimsical-cartoon.jpg",
+        "rect": [0, 0, 1448, 1086],
+        "reference": {
+          "label": "Visual reference by @selenique.studio on Threads",
+          "url": "https://www.threads.com/@selenique.studio/post/Dfq6fhdkQF6"
+        }
       }
     ]
   },

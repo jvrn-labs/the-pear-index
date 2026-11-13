@@ -52,6 +52,7 @@ const aliases = {
   'Luxury editorial': 'quiet luxury',
   'Maximalism': 'maximalist eclectic',
   'Mascot illustration': 'cartoon comic character mascot logo mark',
+  'Whimsical cartoon illustration': 'big-eyed googly eyes quirky character storybook cat flat color',
   'Ligne claire': 'clear line comics cartoon',
   'Risograph': 'riso spot ink misregistration tactile handmade',
   'Early web / lo-fi digital': 'retro digital retro tech browser',
@@ -113,11 +114,11 @@ function artwork(entry, className, accessible) {
   svg.setAttribute('aria-hidden', 'true');
   svg.setAttribute('focusable', 'false');
   const image = document.createElementNS(svgNamespace, 'image');
-  const src = 'art/' + entry.chapter.id + '.jpg';
+  const src = 'art/' + (entry.artwork || entry.chapter.id + '.jpg');
   if (accessible) image.setAttribute('href', src);
   else image.dataset.src = src;
-  image.setAttribute('width', entry.chapter.width);
-  image.setAttribute('height', entry.chapter.height);
+  image.setAttribute('width', entry.artwork ? width : entry.chapter.width);
+  image.setAttribute('height', entry.artwork ? height : entry.chapter.height);
   svg.append(image);
   container.append(svg);
   if (!accessible) artworkObserver.observe(container);
@@ -251,6 +252,16 @@ function showDetail() {
   document.getElementById('detail-chapter').textContent = entry.chapter.name;
   document.getElementById('detail-title').textContent = entry.name;
   document.getElementById('detail-description').textContent = entry.description;
+  const reference = document.getElementById('detail-reference');
+  reference.hidden = !entry.reference;
+  const referenceLink = reference.querySelector('a');
+  if (entry.reference) {
+    referenceLink.href = entry.reference.url;
+    referenceLink.textContent = entry.reference.label;
+  } else {
+    referenceLink.removeAttribute('href');
+    referenceLink.textContent = '';
+  }
   document.getElementById('detail-position').textContent = (activePosition + 1) + ' / ' + detailEntries.length;
   detailArt.replaceChildren(artwork(entry, 'art', true));
   previous.disabled = detailEntries.length < 2;

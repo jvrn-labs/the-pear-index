@@ -1,6 +1,6 @@
 # The Pear Index
 
-A visual atlas of art and graphic design. Explore 147 illustrated studies across 12 chapters, using one red pear as the recurring motif.
+A visual atlas of art and graphic design. Explore 148 illustrated studies across 12 chapters, using one red pear as the recurring motif.
 
 [Browse the live atlas on GitHub Pages](https://jvrn-labs.github.io/the-pear-index/)
 

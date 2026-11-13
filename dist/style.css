@@ -138,6 +138,7 @@ button > svg, a > svg, .hero-points svg, .chapter-filter svg {
 .detail-art { display: grid; place-items: center; background: var(--surface); border-radius: var(--radius); overflow: hidden; }
 .detail-art .art { width: min(100%, calc(min(62dvh, 660px) * var(--image-ratio))); aspect-ratio: var(--image-ratio); }
 #detail-description { max-width: 72ch; margin: 17px 0; color: var(--ink); font-size: 17px; }
+#detail-reference { margin: -5px 0 17px; color: var(--muted); font-size: 14px; }
 .detail-navigation { display: flex; align-items: center; justify-content: space-between; gap: 8px; border-top: 1px solid var(--line); padding-top: 12px; }
 .detail-navigation button { display: inline-flex; align-items: center; gap: 6px; min-height: 44px; padding: 0 14px; border: 1px solid var(--line); border-radius: 999px; background: var(--paper); font-size: 13px; font-weight: 600; }
 .detail-navigation button:disabled { opacity: .48; cursor: default; }
