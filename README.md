@@ -4,7 +4,7 @@ A visual atlas of art and graphic design. Explore 148 illustrated studies across
 
 [Browse the live atlas on GitHub Pages](https://jvrn-labs.github.io/the-pear-index/)
 
-The [website and app UX/UI gallery](https://jvrn-labs.github.io/the-pear-index/#ux-ui) adds 66 interface studies, with filters for platform and chapter. The examples are fictional concept images, with links to design documentation and references in the study details.
+The [website and app UX/UI gallery](https://jvrn-labs.github.io/the-pear-index/ux-ui/) includes 66 interface studies, with filters for platform and chapter. The examples are fictional concept images, with links to design documentation and references in the study details.
 
 ## Run locally
 

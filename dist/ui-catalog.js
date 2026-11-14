@@ -1,4 +1,4 @@
-const uiCatalog = [
+const catalog = [
   {
     "id": "ui-foundations",
     "name": "Interface foundations",

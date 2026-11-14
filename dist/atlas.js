@@ -7,10 +7,8 @@ const search = document.getElementById('search');
 const searchForm = document.getElementById('style-search');
 const suggestions = document.getElementById('suggestions');
 const results = document.getElementById('results');
-const uiGallery = document.getElementById('ui-gallery');
-const uiSearch = document.getElementById('ui-search');
-const uiFilters = document.getElementById('ui-filters');
-const uiPlatforms = document.getElementById('ui-platforms');
+const platforms = document.getElementById('platforms');
+const artworkBase = new URL('art/', document.currentScript.src);
 const dialog = document.getElementById('detail');
 const detailArt = document.getElementById('detail-art');
 const previous = document.getElementById('previous');
@@ -89,7 +87,7 @@ function expandIcon() {
 }
 
 let index = 0;
-for (const chapter of [...catalog, ...uiCatalog]) {
+for (const chapter of catalog) {
   for (const entry of chapter.entries) {
     entry.chapter = chapter;
     entry.index = ++index;
@@ -98,8 +96,7 @@ for (const chapter of [...catalog, ...uiCatalog]) {
 }
 const platformLabels = {web: 'Web', app: 'App', both: 'Web + app'};
 let visibleEntries = [];
-let visibleUiEntries = [];
-let uiPlatform = 'all';
+let selectedPlatform = 'all';
 let openedFrom;
 let detailEntries = [];
 let activePosition = 0;
@@ -120,7 +117,8 @@ function artwork(entry, className, accessible) {
   svg.setAttribute('aria-hidden', 'true');
   svg.setAttribute('focusable', 'false');
   const image = document.createElementNS(svgNamespace, 'image');
-  const src = 'art/' + (entry.artwork || entry.chapter.artwork || entry.chapter.id + '.jpg');
+  const file = entry.artwork || entry.chapter.artwork || entry.chapter.id + '.jpg';
+  const src = new URL(file, artworkBase).href;
   if (accessible) image.setAttribute('href', src);
   else image.dataset.src = src;
   image.setAttribute('width', entry.artwork ? width : entry.chapter.width);
@@ -132,65 +130,67 @@ function artwork(entry, className, accessible) {
 }
 
 const hero = document.getElementById('hero-art');
-const switcher = document.getElementById('hero-switcher');
-const entries = catalog.flatMap(chapter => chapter.entries);
-const featured = ['Art Deco', 'Pop Art', 'Baroque', 'Gradient mesh']
-  .map(name => entries.find(entry => entry.name === name));
-let featuredEntry = featured[0];
-const featureButton = element('button', 'hero-tile');
-featureButton.type = 'button';
-featureButton.setAttribute('aria-haspopup', 'dialog');
-featureButton.addEventListener('click', () => openDetail(featuredEntry, featured, featureButton));
-hero.append(featureButton);
+if (hero) {
+  const switcher = document.getElementById('hero-switcher');
+  const entries = catalog.flatMap(chapter => chapter.entries);
+  const featured = ['Art Deco', 'Pop Art', 'Baroque', 'Gradient mesh']
+    .map(name => entries.find(entry => entry.name === name));
+  let featuredEntry = featured[0];
+  const featureButton = element('button', 'hero-tile');
+  featureButton.type = 'button';
+  featureButton.setAttribute('aria-haspopup', 'dialog');
+  featureButton.addEventListener('click', () => openDetail(featuredEntry, featured, featureButton));
+  hero.append(featureButton);
 
-function showFeatured(entry) {
-  featuredEntry = entry;
-  featureButton.setAttribute('aria-label', 'View featured study: ' + entry.name);
-  const caption = element('span', 'hero-feature');
-  caption.append(element('span', '', entry.name), expandIcon());
-  featureButton.replaceChildren(artwork(entry, 'art', true), caption);
-  for (const [index, button] of Array.from(switcher.children).entries()) {
-    button.setAttribute('aria-pressed', String(featured[index] === entry));
+  function showFeatured(entry) {
+    featuredEntry = entry;
+    featureButton.setAttribute('aria-label', 'View featured study: ' + entry.name);
+    const caption = element('span', 'hero-feature');
+    caption.append(element('span', '', entry.name), expandIcon());
+    featureButton.replaceChildren(artwork(entry, 'art', true), caption);
+    for (const [index, button] of Array.from(switcher.children).entries()) {
+      button.setAttribute('aria-pressed', String(featured[index] === entry));
+    }
   }
-}
 
-for (const entry of featured) {
-  const button = element('button');
-  button.type = 'button';
-  button.setAttribute('aria-label', 'Show ' + entry.name);
-  button.addEventListener('click', () => showFeatured(entry));
-  switcher.append(button);
-}
-showFeatured(featuredEntry);
-
-function addChapterOptions(select, chapters) {
-  for (const chapter of chapters) {
-    const option = element('option', '', chapterLabels[chapter.id] || chapter.name);
-    option.value = chapter.id;
-    select.append(option);
+  for (const entry of featured) {
+    const button = element('button');
+    button.type = 'button';
+    button.setAttribute('aria-label', 'Show ' + entry.name);
+    button.addEventListener('click', () => showFeatured(entry));
+    switcher.append(button);
   }
+  showFeatured(featuredEntry);
+}
+for (const chapter of catalog) {
+  const option = element('option', '', chapterLabels[chapter.id] || chapter.name);
+  option.value = chapter.id;
+  filters.append(option);
 }
 
-addChapterOptions(filters, catalog);
-addChapterOptions(uiFilters, uiCatalog);
+function renderCollection() {
+  artworkObserver.disconnect();
+  const phrase = normalized(search.value);
+  for (const button of suggestions?.querySelectorAll('button') || []) {
+    button.setAttribute('aria-pressed', String(filters.value === 'all' && normalized(button.textContent) === phrase));
+  }
+  for (const button of platforms?.querySelectorAll('button') || []) {
+    button.setAttribute('aria-pressed', String(button.value === selectedPlatform));
+  }
 
-function renderGallery({chapters, field, select, target, status, platform = 'all', resetFilters}) {
-  for (const art of target.querySelectorAll('.card .art')) artworkObserver.unobserve(art);
-  const phrase = normalized(field.value);
   const query = phrase.split(' ').filter(Boolean);
-  const matchesInGallery = [];
+  visibleEntries = [];
   const fragment = document.createDocumentFragment();
   let chapterCount = 0;
-  const total = chapters.reduce((count, chapter) => count + chapter.entries.length, 0);
-  for (const chapter of chapters) {
-    if (select.value !== 'all' && chapter.id !== select.value) continue;
+  for (const chapter of catalog) {
+    if (filters.value !== 'all' && chapter.id !== filters.value) continue;
     const matches = chapter.entries.filter(entry =>
-      (platform === 'all' || entry.platform === platform || entry.platform === 'both') &&
+      (selectedPlatform === 'all' || entry.platform === selectedPlatform || entry.platform === 'both') &&
       query.every(word => entry.searchText.includes(word))
     );
     if (matches.length === 0) continue;
     chapterCount++;
-    matchesInGallery.push(...matches);
+    visibleEntries.push(...matches);
 
     const section = element('section', 'chapter');
     section.setAttribute('aria-labelledby', 'chapter-' + chapter.id);
@@ -224,8 +224,9 @@ function renderGallery({chapters, field, select, target, status, platform = 'all
     fragment.append(section);
   }
 
-  const count = matchesInGallery.length;
-  status.textContent = count === total
+  const count = visibleEntries.length;
+  const total = index;
+  results.textContent = count === total
     ? total + ' studies across ' + chapterCount + (chapterCount === 1 ? ' chapter' : ' chapters')
     : count + ' of ' + total + ' studies';
   if (count === 0) {
@@ -233,45 +234,30 @@ function renderGallery({chapters, field, select, target, status, platform = 'all
     const reset = element('button', 'reset-search', 'Clear search and filters');
     reset.type = 'button';
     reset.addEventListener('click', () => {
-      field.value = '';
-      select.value = 'all';
-      resetFilters();
-      field.focus();
+      search.value = '';
+      filters.value = 'all';
+      selectedPlatform = 'all';
+      renderCollection();
+      search.focus();
     });
     empty.append(element('h3', '', 'No matching studies'), element('p', '', 'Try a shorter term or look across all chapters.'), reset);
     fragment.append(empty);
   }
-  target.replaceChildren(fragment);
-  return matchesInGallery;
-}
-
-function renderCollection() {
-  const phrase = normalized(search.value);
-  for (const button of suggestions.querySelectorAll('button')) {
-    button.setAttribute('aria-pressed', String(filters.value === 'all' && normalized(button.textContent) === phrase));
-  }
-  visibleEntries = renderGallery({chapters: catalog, field: search, select: filters, target: gallery, status: results, resetFilters: renderCollection});
-}
-
-function renderUiCollection() {
-  for (const button of uiPlatforms.querySelectorAll('button')) {
-    button.setAttribute('aria-pressed', String(button.value === uiPlatform));
-  }
-  visibleUiEntries = renderGallery({
-    chapters: uiCatalog, field: uiSearch, select: uiFilters, target: uiGallery, status: document.getElementById('ui-results'),
-    platform: uiPlatform, resetFilters() {
-      uiPlatform = 'all';
-      renderUiCollection();
-    }
-  });
+  gallery.replaceChildren(fragment);
 }
 
 filters.addEventListener('change', renderCollection);
-suggestions.addEventListener('click', event => {
+suggestions?.addEventListener('click', event => {
   const button = event.target.closest('button');
   if (!button) return;
   search.value = button.getAttribute('aria-pressed') === 'true' ? '' : button.textContent;
   filters.value = 'all';
+  renderCollection();
+});
+platforms?.addEventListener('click', event => {
+  const button = event.target.closest('button');
+  if (!button || button.value === selectedPlatform) return;
+  selectedPlatform = button.value;
   renderCollection();
 });
 search.addEventListener('input', renderCollection);
@@ -281,19 +267,6 @@ searchForm.addEventListener('submit', event => {
   gallery.scrollIntoView({block: 'start'});
 });
 renderCollection();
-uiFilters.addEventListener('change', renderUiCollection);
-uiSearch.addEventListener('input', renderUiCollection);
-uiPlatforms.addEventListener('click', event => {
-  const button = event.target.closest('button');
-  if (!button || button.value === uiPlatform) return;
-  uiPlatform = button.value;
-  renderUiCollection();
-});
-document.getElementById('ui-search-form').addEventListener('submit', event => {
-  event.preventDefault();
-  uiGallery.scrollIntoView({block: 'start'});
-});
-renderUiCollection();
 
 function showDetail() {
   const entry = detailEntries[activePosition];
@@ -338,15 +311,12 @@ function openDetail(entry, entries, trigger) {
   dialog.showModal();
 }
 
-function openGalleryCard(event, visible) {
+gallery.addEventListener('click', event => {
   const card = event.target.closest('button[data-index]');
   if (!card) return;
-  const entry = visible.find(entry => entry.index === Number(card.dataset.index));
-  openDetail(entry, visible, card);
-}
-
-gallery.addEventListener('click', event => openGalleryCard(event, visibleEntries));
-uiGallery.addEventListener('click', event => openGalleryCard(event, visibleUiEntries));
+  const entry = visibleEntries.find(entry => entry.index === Number(card.dataset.index));
+  openDetail(entry, visibleEntries, card);
+});
 previous.addEventListener('click', () => stepDetail(-1));
 next.addEventListener('click', () => stepDetail(1));
 dialog.addEventListener('keydown', event => {

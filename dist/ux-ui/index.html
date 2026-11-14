@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#ffffff">
+  <meta name="description" content="Explore website and app UX/UI styles, layout patterns, and design systems through illustrated examples.">
+  <title>Website &amp; App UX/UI — The Pear Index</title>
+  <link rel="icon" href="../pear.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../style.css">
+  <script defer src="../ui-catalog.js"></script>
+  <script defer src="../atlas.js"></script>
+</head>
+<body id="top">
+  <a class="skip-link" href="#collection">Skip to the collection</a>
+  <header class="masthead wide">
+    <a class="brand" href="../"><img src="../pear.svg" width="26" height="28" alt=""> The Pear Index</a>
+    <nav aria-label="Site"><a href="../#collection">Art Styles</a><a href="./" aria-current="page">UX/UI Styles</a><a href="../#about">About the atlas</a></nav>
+  </header>
+  <main class="shell">
+    <section class="collection interface-collection" id="collection" aria-labelledby="ui-title">
+      <div class="collection-header">
+        <h1 id="ui-title">Website &amp; App UX/UI</h1>
+        <p id="results" class="results" aria-live="polite"></p>
+      </div>
+      <p class="interface-intro">Compare visual styles, layout patterns, and design systems through fictional pear-themed websites and apps. Each study explains the design and what to watch for when applying it.</p>
+      <form id="style-search" class="search-field" role="search" aria-label="UX/UI styles">
+        <label class="visually-hidden" for="search">Search UX/UI styles</label>
+        <input id="search" type="search" placeholder="Search UX/UI styles" autocomplete="off">
+        <button class="search-button" type="submit" aria-label="Show UX/UI search results"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.7" cy="10.7" r="6.2"/><path d="m15.4 15.4 4.1 4.1"/></svg></button>
+      </form>
+      <div class="controls">
+        <div class="suggestions" id="platforms" role="group" aria-label="Match examples by platform">
+          <button type="button" value="all" aria-pressed="true">All platforms</button>
+          <button type="button" value="web" aria-pressed="false">Website</button>
+          <button type="button" value="app" aria-pressed="false">App</button>
+        </div>
+        <label class="chapter-filter">
+          <span class="visually-hidden">Filter UX/UI by chapter</span>
+          <select id="filters"><option value="all">All chapters</option></select>
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
+        </label>
+      </div>
+      <div id="gallery"></div>
+      <noscript><p>Enable JavaScript to browse the UX/UI studies.</p></noscript>
+    </section>
+
+  </main>
+
+  <dialog class="detail" id="detail" aria-labelledby="detail-title" aria-describedby="detail-description">
+    <div class="detail-inner">
+      <header class="detail-top">
+        <div>
+          <h2 id="detail-title" aria-live="polite"></h2>
+          <div class="detail-meta">
+            <img src="../pear.svg" width="34" height="34" alt="">
+            <div><p id="detail-chapter"></p><p id="detail-index"></p></div>
+          </div>
+        </div>
+        <form method="dialog"><button class="icon-button" type="submit" aria-label="Close detail" autofocus><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 6 12 12M6 18 18 6"/></svg></button></form>
+      </header>
+      <div id="detail-art" class="detail-art"></div>
+      <p id="detail-description"></p>
+      <p id="detail-guidance" hidden></p>
+      <p id="detail-reference" hidden><a target="_blank" rel="noopener noreferrer"></a></p>
+      <footer class="detail-navigation" aria-label="Explore other specimens">
+        <button id="previous" type="button"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19 12H5m6-6-6 6 6 6"/></svg> Previous</button>
+        <span id="detail-position"></span>
+        <button id="next" type="button">Next <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14m-6-6 6 6-6 6"/></svg></button>
+      </footer>
+    </div>
+  </dialog>
+</body>
+</html>
