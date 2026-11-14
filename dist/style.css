@@ -54,6 +54,7 @@ button > svg, a > svg, .hero-points svg, .chapter-filter svg {
 .hero h1 { font-size: clamp(42px, 4.45vw, 71px); line-height: 1.04; letter-spacing: -.057em; margin: 22px 0 18px; }
 .hero h1 em { font-style: normal; color: var(--rose); }
 .hero-description { max-width: 42ch; margin: 0 0 16px; color: var(--muted); font-size: 17px; }
+.hero-ui-link { display: inline-flex; align-items: center; min-height: 44px; margin-inline-start: 13px; font-size: 14px; font-weight: 650; }
 .hero-points { display: grid; gap: 8px; margin: 0 0 25px; padding: 0; list-style: none; font-size: 14px; }
 .hero-points li { display: flex; align-items: center; gap: 9px; }
 .hero-points svg { width: 22px; height: 22px; padding: 3px; border-radius: 50%; color: var(--rose); background: var(--blush); }
@@ -94,7 +95,10 @@ button > svg, a > svg, .hero-points svg, .chapter-filter svg {
 .chapter-filter { position: relative; max-width: 100%; }
 .chapter-filter select { appearance: none; max-width: 100%; min-width: 142px; padding-inline-end: 38px; border-radius: 9px; font-size: 14px; }
 .chapter-filter svg { position: absolute; inset: 13px 12px auto auto; pointer-events: none; }
-#gallery { scroll-margin-top: 16px; }
+#gallery, #ui-gallery { scroll-margin-top: 16px; }
+.interface-collection { border-top: 1px solid var(--line); padding-top: 36px; }
+.interface-intro { max-width: 70ch; margin: 0 0 16px; color: var(--muted); }
+.card-platform { color: var(--muted); font-size: 12px; white-space: nowrap; }
 .chapter { padding-block: 38px 6px; }
 .chapter + .chapter { margin-top: 34px; border-top: 1px solid var(--line); }
 .chapter-heading { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: baseline; gap: 3px 12px; margin-bottom: 17px; }
@@ -139,12 +143,13 @@ button > svg, a > svg, .hero-points svg, .chapter-filter svg {
 .detail-art .art { width: min(100%, calc(min(62dvh, 660px) * var(--image-ratio))); aspect-ratio: var(--image-ratio); }
 #detail-description { max-width: 72ch; margin: 17px 0; color: var(--ink); font-size: 17px; }
 #detail-reference { margin: -5px 0 17px; color: var(--muted); font-size: 14px; }
+#detail-guidance { max-width: 72ch; margin: -5px 0 17px; color: var(--muted); }
 .detail-navigation { display: flex; align-items: center; justify-content: space-between; gap: 8px; border-top: 1px solid var(--line); padding-top: 12px; }
 .detail-navigation button { display: inline-flex; align-items: center; gap: 6px; min-height: 44px; padding: 0 14px; border: 1px solid var(--line); border-radius: 999px; background: var(--paper); font-size: 13px; font-weight: 600; }
 .detail-navigation button:disabled { opacity: .48; cursor: default; }
 #detail-position { color: var(--muted); font-size: 13px; font-variant-numeric: tabular-nums; }
 @media (min-width: 1430px) {
-  .grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  #gallery .grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
 }
 @media (max-width: 980px) {
   .shell { width: calc(100% - 64px); }
@@ -177,8 +182,13 @@ button > svg, a > svg, .hero-points svg, .chapter-filter svg {
   .detail-top { margin-bottom: 14px; }
   #detail-description { font-size: 16px; }
 }
+@media (max-width: 475px) {
+  .masthead { flex-wrap: wrap; gap: 0 12px; padding-block: 4px; }
+  .masthead nav { gap: 12px; margin-inline-start: 0; }
+  .hero-ui-link { display: flex; width: fit-content; margin-inline-start: 0; }
+  .interface-collection .card-caption { flex-wrap: wrap; }
+}
 @media (max-width: 390px) {
-  .masthead nav { gap: 10px; }
   .brand img { width: 21px; }
   .search-field { padding-inline-start: 14px; }
   .suggestions button { padding-inline: 10px; }

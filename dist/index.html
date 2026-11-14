@@ -4,18 +4,19 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#ffffff">
-  <meta name="description" content="An illustrated reference for art and graphic design. Explore the styles, techniques, and movements through one red pear.">
+  <meta name="description" content="An illustrated reference for art, graphic design, and website and app UX/UI. Explore different styles through one red pear.">
   <title>The Pear Index — An atlas of art &amp; graphic design</title>
   <link rel="icon" href="pear.svg" type="image/svg+xml">
   <link rel="stylesheet" href="style.css">
   <script defer src="catalog.js"></script>
+  <script defer src="ui-catalog.js"></script>
   <script defer src="atlas.js"></script>
 </head>
 <body id="top">
   <a class="skip-link" href="#collection">Skip to the collection</a>
   <header class="masthead wide">
     <a class="brand" href="#top"><img src="pear.svg" width="26" height="28" alt=""> The Pear Index</a>
-    <nav aria-label="Site"><a href="#collection">Explore</a><a href="#about">About the atlas</a></nav>
+    <nav aria-label="Site"><a href="#collection">Art styles</a><a href="#ux-ui">UX/UI styles</a><a href="#about">About the atlas</a></nav>
     <a class="pill masthead-action" href="#collection">Browse styles</a>
   </header>
   <div class="announcement wide">
@@ -27,12 +28,13 @@
       <div class="hero-copy">
         <p class="eyebrow">Art &amp; design inspiration</p>
         <h1 id="site-title">Find your next<br> <em>design direction.</em></h1>
-        <p class="hero-description">See how artists and designers reinterpret the same subject across movements, styles, and techniques.</p>
+        <p class="hero-description">See how artists and designers reinterpret one subject across art movements, graphic styles, and digital interfaces.</p>
         <ul class="hero-points">
           <li><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 12 4 4 8-8"/></svg> Compare studies side by side</li>
           <li><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 12 4 4 8-8"/></svg> Open any piece for a closer look</li>
         </ul>
         <a class="pill primary" href="#collection">Explore the collection <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14m-6-6 6 6-6 6"/></svg></a>
+        <a class="hero-ui-link" href="#ux-ui">Browse UX/UI styles</a>
       </div>
       <div class="hero-exhibit">
         <div class="hero-art" id="hero-art"></div>
@@ -68,11 +70,38 @@
       <noscript><p>Enable JavaScript to browse the illustrated collection.</p></noscript>
     </section>
 
+    <section class="collection interface-collection" id="ux-ui" aria-labelledby="ui-title">
+      <div class="collection-header">
+        <h2 id="ui-title">Website and app UX/UI</h2>
+        <p id="ui-results" class="results" aria-live="polite"></p>
+      </div>
+      <p class="interface-intro">Compare visual styles, layout patterns, and design systems through fictional pear-themed websites and apps. Each study explains the design and what to watch for when applying it.</p>
+      <form id="ui-search-form" class="search-field" role="search" aria-label="UX/UI styles">
+        <label class="visually-hidden" for="ui-search">Search UX/UI styles</label>
+        <input id="ui-search" type="search" placeholder="Search UX/UI styles" autocomplete="off">
+        <button class="search-button" type="submit" aria-label="Show UX/UI search results"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.7" cy="10.7" r="6.2"/><path d="m15.4 15.4 4.1 4.1"/></svg></button>
+      </form>
+      <div class="controls">
+        <div class="suggestions" id="ui-platforms" role="group" aria-label="Match examples by platform">
+          <button type="button" value="all" aria-pressed="true">All platforms</button>
+          <button type="button" value="web" aria-pressed="false">Website</button>
+          <button type="button" value="app" aria-pressed="false">App</button>
+        </div>
+        <label class="chapter-filter">
+          <span class="visually-hidden">Filter UX/UI by chapter</span>
+          <select id="ui-filters"><option value="all">All chapters</option></select>
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
+        </label>
+      </div>
+      <div id="ui-gallery"></div>
+      <noscript><p>Enable JavaScript to browse the UX/UI studies.</p></noscript>
+    </section>
+
     <footer id="about" class="about">
       <div>
         <p class="eyebrow">About the atlas</p>
         <h2>One motif, many methods.</h2>
-        <p>The illustrations are generated studies. Repeating the pear helps isolate what changes from one approach to another, from the way a page is laid out to how an ink mark lands on paper.</p>
+        <p>The images are generated studies. Repeating the pear makes it easier to compare how artists use color and texture, and how interface designers arrange content and controls.</p>
       </div>
       <div>
         <h3>How to read the index</h3>
@@ -96,6 +125,7 @@
       </header>
       <div id="detail-art" class="detail-art"></div>
       <p id="detail-description"></p>
+      <p id="detail-guidance" hidden></p>
       <p id="detail-reference" hidden><a target="_blank" rel="noopener noreferrer"></a></p>
       <footer class="detail-navigation" aria-label="Explore other specimens">
         <button id="previous" type="button"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19 12H5m6-6-6 6 6 6"/></svg> Previous</button>

@@ -7,6 +7,10 @@ const search = document.getElementById('search');
 const searchForm = document.getElementById('style-search');
 const suggestions = document.getElementById('suggestions');
 const results = document.getElementById('results');
+const uiGallery = document.getElementById('ui-gallery');
+const uiSearch = document.getElementById('ui-search');
+const uiFilters = document.getElementById('ui-filters');
+const uiPlatforms = document.getElementById('ui-platforms');
 const dialog = document.getElementById('detail');
 const detailArt = document.getElementById('detail-art');
 const previous = document.getElementById('previous');
@@ -85,15 +89,17 @@ function expandIcon() {
 }
 
 let index = 0;
-for (const chapter of catalog) {
+for (const chapter of [...catalog, ...uiCatalog]) {
   for (const entry of chapter.entries) {
     entry.chapter = chapter;
     entry.index = ++index;
-    entry.searchText = normalized([entry.name, entry.description, chapter.name, aliases[entry.name] || ''].join(' '));
+    entry.searchText = normalized([entry.name, entry.description, chapter.name, entry.keywords, aliases[entry.name]].join(' '));
   }
 }
-const total = index;
+const platformLabels = {web: 'Web', app: 'App', both: 'Web + app'};
 let visibleEntries = [];
+let visibleUiEntries = [];
+let uiPlatform = 'all';
 let openedFrom;
 let detailEntries = [];
 let activePosition = 0;
@@ -114,7 +120,7 @@ function artwork(entry, className, accessible) {
   svg.setAttribute('aria-hidden', 'true');
   svg.setAttribute('focusable', 'false');
   const image = document.createElementNS(svgNamespace, 'image');
-  const src = 'art/' + (entry.artwork || entry.chapter.id + '.jpg');
+  const src = 'art/' + (entry.artwork || entry.chapter.artwork || entry.chapter.id + '.jpg');
   if (accessible) image.setAttribute('href', src);
   else image.dataset.src = src;
   image.setAttribute('width', entry.artwork ? width : entry.chapter.width);
@@ -157,28 +163,34 @@ for (const entry of featured) {
 }
 showFeatured(featuredEntry);
 
-for (const chapter of catalog) {
-  const option = element('option', '', chapterLabels[chapter.id]);
-  option.value = chapter.id;
-  filters.append(option);
+function addChapterOptions(select, chapters) {
+  for (const chapter of chapters) {
+    const option = element('option', '', chapterLabels[chapter.id] || chapter.name);
+    option.value = chapter.id;
+    select.append(option);
+  }
 }
 
-function renderCollection() {
-  artworkObserver.disconnect();
-  const phrase = normalized(search.value);
+addChapterOptions(filters, catalog);
+addChapterOptions(uiFilters, uiCatalog);
+
+function renderGallery({chapters, field, select, target, status, platform = 'all', resetFilters}) {
+  for (const art of target.querySelectorAll('.card .art')) artworkObserver.unobserve(art);
+  const phrase = normalized(field.value);
   const query = phrase.split(' ').filter(Boolean);
-  for (const button of suggestions.querySelectorAll('button')) {
-    button.setAttribute('aria-pressed', String(filters.value === 'all' && normalized(button.textContent) === phrase));
-  }
-  visibleEntries = [];
+  const matchesInGallery = [];
   const fragment = document.createDocumentFragment();
   let chapterCount = 0;
-  for (const chapter of catalog) {
-    if (filters.value !== 'all' && chapter.id !== filters.value) continue;
-    const matches = chapter.entries.filter(entry => query.every(word => entry.searchText.includes(word)));
+  const total = chapters.reduce((count, chapter) => count + chapter.entries.length, 0);
+  for (const chapter of chapters) {
+    if (select.value !== 'all' && chapter.id !== select.value) continue;
+    const matches = chapter.entries.filter(entry =>
+      (platform === 'all' || entry.platform === platform || entry.platform === 'both') &&
+      query.every(word => entry.searchText.includes(word))
+    );
     if (matches.length === 0) continue;
     chapterCount++;
-    visibleEntries.push(...matches);
+    matchesInGallery.push(...matches);
 
     const section = element('section', 'chapter');
     section.setAttribute('aria-labelledby', 'chapter-' + chapter.id);
@@ -195,9 +207,11 @@ function renderCollection() {
       card.dataset.index = entry.index;
       card.setAttribute('aria-haspopup', 'dialog');
       const caption = element('span', 'card-caption');
-      const number = element('span', 'card-number', String(entry.index).padStart(3, '0'));
-      number.setAttribute('aria-hidden', 'true');
-      caption.append(element('span', 'card-title', entry.name), number);
+      const label = entry.platform
+        ? element('span', 'card-platform', platformLabels[entry.platform])
+        : element('span', 'card-number', String(entry.index).padStart(3, '0'));
+      label.setAttribute('aria-hidden', 'true');
+      caption.append(element('span', 'card-title', entry.name), label);
       const art = artwork(entry, 'art', false);
       const preview = element('span', 'card-preview');
       preview.append(element('span', '', 'View study'), expandIcon());
@@ -210,8 +224,8 @@ function renderCollection() {
     fragment.append(section);
   }
 
-  const count = visibleEntries.length;
-  results.textContent = count === total
+  const count = matchesInGallery.length;
+  status.textContent = count === total
     ? total + ' studies across ' + chapterCount + (chapterCount === 1 ? ' chapter' : ' chapters')
     : count + ' of ' + total + ' studies';
   if (count === 0) {
@@ -219,15 +233,37 @@ function renderCollection() {
     const reset = element('button', 'reset-search', 'Clear search and filters');
     reset.type = 'button';
     reset.addEventListener('click', () => {
-      search.value = '';
-      filters.value = 'all';
-      renderCollection();
-      search.focus();
+      field.value = '';
+      select.value = 'all';
+      resetFilters();
+      field.focus();
     });
     empty.append(element('h3', '', 'No matching studies'), element('p', '', 'Try a shorter term or look across all chapters.'), reset);
     fragment.append(empty);
   }
-  gallery.replaceChildren(fragment);
+  target.replaceChildren(fragment);
+  return matchesInGallery;
+}
+
+function renderCollection() {
+  const phrase = normalized(search.value);
+  for (const button of suggestions.querySelectorAll('button')) {
+    button.setAttribute('aria-pressed', String(filters.value === 'all' && normalized(button.textContent) === phrase));
+  }
+  visibleEntries = renderGallery({chapters: catalog, field: search, select: filters, target: gallery, status: results, resetFilters: renderCollection});
+}
+
+function renderUiCollection() {
+  for (const button of uiPlatforms.querySelectorAll('button')) {
+    button.setAttribute('aria-pressed', String(button.value === uiPlatform));
+  }
+  visibleUiEntries = renderGallery({
+    chapters: uiCatalog, field: uiSearch, select: uiFilters, target: uiGallery, status: document.getElementById('ui-results'),
+    platform: uiPlatform, resetFilters() {
+      uiPlatform = 'all';
+      renderUiCollection();
+    }
+  });
 }
 
 filters.addEventListener('change', renderCollection);
@@ -245,13 +281,31 @@ searchForm.addEventListener('submit', event => {
   gallery.scrollIntoView({block: 'start'});
 });
 renderCollection();
+uiFilters.addEventListener('change', renderUiCollection);
+uiSearch.addEventListener('input', renderUiCollection);
+uiPlatforms.addEventListener('click', event => {
+  const button = event.target.closest('button');
+  if (!button || button.value === uiPlatform) return;
+  uiPlatform = button.value;
+  renderUiCollection();
+});
+document.getElementById('ui-search-form').addEventListener('submit', event => {
+  event.preventDefault();
+  uiGallery.scrollIntoView({block: 'start'});
+});
+renderUiCollection();
 
 function showDetail() {
   const entry = detailEntries[activePosition];
-  document.getElementById('detail-index').textContent = 'Study ' + String(entry.index).padStart(3, '0');
+  document.getElementById('detail-index').textContent = entry.platform
+    ? platformLabels[entry.platform] + ' · Interface concept'
+    : 'Study ' + String(entry.index).padStart(3, '0');
   document.getElementById('detail-chapter').textContent = entry.chapter.name;
   document.getElementById('detail-title').textContent = entry.name;
   document.getElementById('detail-description').textContent = entry.description;
+  const guidance = document.getElementById('detail-guidance');
+  guidance.hidden = !entry.guidance;
+  guidance.textContent = entry.guidance || '';
   const reference = document.getElementById('detail-reference');
   reference.hidden = !entry.reference;
   const referenceLink = reference.querySelector('a');
@@ -284,12 +338,15 @@ function openDetail(entry, entries, trigger) {
   dialog.showModal();
 }
 
-gallery.addEventListener('click', event => {
+function openGalleryCard(event, visible) {
   const card = event.target.closest('button[data-index]');
   if (!card) return;
-  const entry = visibleEntries.find(entry => entry.index === Number(card.dataset.index));
-  openDetail(entry, visibleEntries, card);
-});
+  const entry = visible.find(entry => entry.index === Number(card.dataset.index));
+  openDetail(entry, visible, card);
+}
+
+gallery.addEventListener('click', event => openGalleryCard(event, visibleEntries));
+uiGallery.addEventListener('click', event => openGalleryCard(event, visibleUiEntries));
 previous.addEventListener('click', () => stepDetail(-1));
 next.addEventListener('click', () => stepDetail(1));
 dialog.addEventListener('keydown', event => {
